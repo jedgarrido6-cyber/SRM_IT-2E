@@ -6,6 +6,8 @@ import java.sql.PreparedStatement;
 import java.sql.Statement;
 import java.sql.ResultSet;
 import java.sql.SQLException;
+import java.util.List;
+import java.util.ArrayList;
 
 public class UserDao {
 
@@ -81,5 +83,28 @@ public class UserDao {
             System.err.println("Error during login: " + e.getMessage());
         }
         return null;
+    }
+
+    public List<User> getAllUser(){
+        List<User> userList = new ArrayList<>();
+        String sql = "SELECT id, username, password, roles, status FROM users";
+
+        try (Connection conn = com.scc.dao.DatabaseConnection.getConnection();
+             Statement stmt = conn.createStatement();
+             ResultSet rs = stmt.executeQuery(sql)){
+
+            while (rs.next()) {
+                userList.add(new User(
+                        rs.getInt("id"),
+                        rs.getString("username"),
+                        rs.getString("password"),
+                        rs.getString("roles"),
+                        rs.getString("status")
+                ));
+            }
+        } catch (SQLException e){
+            System.err.println("Error fetching all users: " + e.getMessage());
+        }
+        return userList;
     }
 }
